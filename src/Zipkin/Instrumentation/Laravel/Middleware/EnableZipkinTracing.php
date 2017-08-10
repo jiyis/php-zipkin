@@ -46,27 +46,31 @@ class EnableZipkinTracing
     public function handle(Request $request, Closure $next)
     {
         try {
+            //获取基本信息
             $method    = $request->getMethod();
             $uri       = $request->getRequestUri();
             $query     = $request->query->all();
-            $ipAddress = $request->server('SERVER_ADDR') ?? '127.0.0.1';
+            $ipAddress = $request->server('SERVER_ADDR') ? $request->server('SERVER_ADDR') : '127.0.0.1';
             $port      = $request->server('SERVER_PORT');
             $host      = $request->server('HTTP_HOST');
             $name      = "{$method} {$uri}";
 
-            $traceId      = $request->header('X-B3-TraceId') ?? null;
-            $spanId       = $request->header('X-B3-SpanId') ?? null;
-            $parentSpanId = $request->header('X-B3-ParentSpanId') ?? null;
-            $sampled      = $request->header('X-B3-Sampled') ?? 1.0;
-            $debug        = $request->header('X-B3-Flags') ?? true;
+            //获取header头中的zipkin相关信息
+            $traceId      = $this->processSpecialHeader($request->header('X-B3-TraceId'));
+            $spanId       = $this->processSpecialHeader($request->header('X-B3-SpanId'));
+            $parentSpanId = $this->processSpecialHeader($request->header('X-B3-ParentSpanId'));
+            $sampled      = $request->header('X-B3-Sampled') ? $request->header('X-B3-Sampled') : 1.0;
+            $debug        = $request->header('X-B3-Flags') ? $request->header('X-B3-Flags') : true;
 
-            /** @var ZipkinTracingService $tracingService */
+            //获取zipkin单例
             $tracingService = app(ZipkinTracingService::class);
-            $serverName     = explode('/', trim(config('api.prefix'), '/')) ?? 'laravel';
+            $apiPrefix      = explode('/', trim(config('api.prefix'), '/'));
+            $serverName     = $apiPrefix ? $apiPrefix : 'laravel';
             self::$endPoint = new Endpoint($ipAddress, $port, end($serverName));
             $tracingService->createTrace(null, self::$endPoint, $traceId, $sampled, $debug);
 
             $trace = $tracingService->getTrace();
+            //创建span作为server
             $trace->createNewSpan($name, null, $spanId, $parentSpanId);
             $trace->record(
                 [Annotation::generateServerRecv()],
@@ -79,17 +83,19 @@ class EnableZipkinTracing
             );
 
             //记录当前Server的SpanId
-            $spans  = $trace->getSpans();
-            $spanId = current($spans)->getSpanId();
+            $spans           = $trace->getSpans();
+            self::$firstSpan = current($spans);
+            $spanId          = current($spans)->getSpanId();
+
+            //记录下当前的zipkin相关信息，往下传递header头需要
             config(['zipKinServerSpanId' => $spanId]);
-            config(['zipKinServerTraceId' => $traceId]);
+            config(['zipKinServerTraceId' => $traceId ? $traceId : $trace->getTraceId()]);
             config(['zipKinServerParentSpanId' => $parentSpanId]);
             config(['zipKinServerSampled' => $sampled]);
             config(['zipKinServerFlags' => $debug]);
             config(['zipKinServerAddress' => $ipAddress]);
             config(['zipKinServerPort' => $port]);
             config(['zipKinServerName' => end($serverName)]);
-            self::$firstSpan = current($spans);
 
             return $next($request);
         } catch (\Exception $e) {
@@ -103,7 +109,6 @@ class EnableZipkinTracing
     public function terminate(Request $request, Response $response)
     {
         try {
-            /** @var ZipkinTracingService $tracingService */
             $tracingService = app(ZipkinTracingService::class);
 
             $trace = $tracingService->getTrace();
@@ -117,6 +122,15 @@ class EnableZipkinTracing
         } catch (\Exception $e) {
 
         }
+    }
 
+    /**
+     * 处理特殊的header
+     * @param $header
+     * @return Identifier|null
+     */
+    protected function processSpecialHeader($header)
+    {
+        return $header ? new Identifier($header) : null;
     }
 }
