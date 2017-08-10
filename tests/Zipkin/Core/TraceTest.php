@@ -10,7 +10,7 @@ class TraceTest extends \PHPUnit\Framework\TestCase
     // Ideally we should refactor this file for unit tests instead of an integration test.
     public function testTrace()
     {
-        $trace = new Trace(null, null, 1.0, true);
+        $trace = new Trace(null, null, null, 1.0, true);
         $trace->setEndpoint(new Endpoint('127.0.0.1', 8080, 'test-trace'));
 
         $trace->createNewSpan('test-server-trace');

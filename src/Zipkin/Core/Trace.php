@@ -1,4 +1,5 @@
 <?php
+
 namespace Drefined\Zipkin\Core;
 
 use Drefined\Zipkin\Tracer;
@@ -26,18 +27,22 @@ class Trace
     private $debug;
 
     /**
-     * @param Tracer|null   $tracer
+     * Trace constructor.
+     * @param Tracer|null $tracer
      * @param Endpoint|null $endpoint
-     * @param float         $sampled
-     * @param bool          $debug
+     * @param null $traceId
+     * @param float $sampled
+     * @param bool $debug
      */
     public function __construct(
         Tracer $tracer = null,
         Endpoint $endpoint = null,
+        $traceId = null,
         $sampled = 1.0,
         $debug = false
-    ) {
-        $this->traceId = Identifier::generate();
+    )
+    {
+        $this->traceId = $traceId ?? Identifier::generate();
         $this->sampled = $sampled;
         $this->debug   = $debug;
 
@@ -59,7 +64,8 @@ class Trace
         Identifier $parentSpanId = null,
         $timestamp = null,
         $duration = null
-    ) {
+    )
+    {
         $traceId = $traceId ?? $this->traceId;
         $spanId  = $spanId ?? Identifier::generate();
 
@@ -72,7 +78,7 @@ class Trace
     }
 
     /**
-     * @param Annotation[]       $annotations
+     * @param Annotation[] $annotations
      * @param BinaryAnnotation[] $binaryAnnotations
      */
     public function record(array $annotations = [], array $binaryAnnotations = [])
@@ -105,6 +111,14 @@ class Trace
     public function getTraceId(): Identifier
     {
         return $this->traceId;
+    }
+
+    /**
+     * @param Identifier $traceId
+     */
+    public function setTraceId(Identifier $traceId)
+    {
+        $this->traceId = $traceId;
     }
 
     /**
@@ -145,5 +159,13 @@ class Trace
     public function setEndpoint(Endpoint $endpoint)
     {
         $this->endpoint = $endpoint;
+    }
+
+    /**
+     * @return Tracer|null
+     */
+    public function getTracer()
+    {
+        return $this->tracer;
     }
 }

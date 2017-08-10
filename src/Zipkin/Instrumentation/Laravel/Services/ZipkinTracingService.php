@@ -13,10 +13,11 @@ class ZipkinTracingService
     public function createTrace(
         Tracer $tracer = null,
         Endpoint $endpoint = null,
+        $traceId = null,
         $sampled = 1.0,
-        $debug = false
+        $debug = true
     ) {
-        $this->trace = new Trace($tracer, $endpoint, $sampled, $debug);
+        $this->trace = new Trace($tracer, $endpoint, $traceId, $sampled, $debug);
     }
 
     /**

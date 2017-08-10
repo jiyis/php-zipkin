@@ -1,14 +1,14 @@
 {
-  "name": "drefined/php-zipkin",
+  "name": "jiyis/php-zipkin",
   "type": "library",
-  "description": "Zipkin's PHP tracer library",
+  "description": "Zipkin library for laravel",
   "keywords": ["zipkin", "php", "tracing", "tracer"],
-  "homepage": "https://github.com/drefined/php-zipkin",
+  "homepage": "https://github.com/jiyis/php-zipkin",
   "license": "MIT",
   "authors": [
     {
-      "name": "David Phruksukarn",
-      "email": "d.refined@gmail.com"
+      "name": "Gary F Dong",
+      "email": "wind.remember@gmail.com"
     }
   ],
   "autoload": {
@@ -16,13 +16,12 @@
       "Drefined\\": "src/"
     }
   },
-  "minimum-stability": "dev",
   "require": {
     "php": "^7.0",
     "guzzlehttp/guzzle": "^6.2"
   },
   "require-dev": {
     "phpunit/phpunit": "^5.7.0",
-    "laravel/framework": "5.3.*"
+    "laravel/framework": "5.4.*"
   }
 }
