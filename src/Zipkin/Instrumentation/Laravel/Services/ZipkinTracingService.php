@@ -23,7 +23,7 @@ class ZipkinTracingService
     /**
      * @return Trace
      */
-    public function getTrace(): Trace
+    public function getTrace()
     {
         return $this->trace;
     }

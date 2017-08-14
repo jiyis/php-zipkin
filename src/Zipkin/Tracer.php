@@ -46,7 +46,7 @@ class Tracer
     /**
      * @param boolean $debug
      */
-    public function setDebug(bool $debug)
+    public function setDebug($debug)
     {
         $this->debug = $debug;
     }

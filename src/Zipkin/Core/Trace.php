@@ -42,7 +42,7 @@ class Trace
         $debug = false
     )
     {
-        $this->traceId = $traceId ?? Identifier::generate();
+        $this->traceId = $traceId ? $traceId : Identifier::generate();
         $this->sampled = $sampled;
         $this->debug   = $debug;
 
@@ -66,8 +66,8 @@ class Trace
         $duration = null
     )
     {
-        $traceId = $traceId ?? $this->traceId;
-        $spanId  = $spanId ?? Identifier::generate();
+        $traceId = $traceId ? $traceId : $this->traceId;
+        $spanId  = $spanId ? $spanId : Identifier::generate();
 
         if (!empty($this->spans) && empty($parentSpanId)) {
             $parentSpan   = end($this->spans);
@@ -108,7 +108,7 @@ class Trace
     /**
      * @return Identifier
      */
-    public function getTraceId(): Identifier
+    public function getTraceId()
     {
         return $this->traceId;
     }
@@ -124,7 +124,7 @@ class Trace
     /**
      * @return Span[]
      */
-    public function getSpans(): array
+    public function getSpans()
     {
         return $this->spans;
     }
@@ -132,7 +132,7 @@ class Trace
     /**
      * @return Span
      */
-    public function popSpan(): Span
+    public function popSpan()
     {
         return array_pop($this->spans);
     }
