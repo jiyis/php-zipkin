@@ -59,7 +59,7 @@ class Tracer
     public static function generateHTTPTracer($sampled = 1.0, $debug = false)
     {
         $client = new Client();
-        $logger = new HTTPLogger($client);
+        $logger = new HTTPLogger($client, config('inno.zipKinTraceUrl','http://localhost:9411/api/v1/spans'));
 
         return new self($logger, $sampled, $debug);
     }
