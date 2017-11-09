@@ -48,7 +48,7 @@ class Trace
 
         if (empty($tracer)) {
             $client       = new Client();
-            $logger       = new HTTPLogger($client);
+            $logger       = new HTTPLogger($client, config('inno.zipKinTraceUrl','http://localhost:9411/api/v1/spans'));
             $this->tracer = new Tracer($logger, $sampled, $debug);
         } else {
             $this->tracer = $tracer;
