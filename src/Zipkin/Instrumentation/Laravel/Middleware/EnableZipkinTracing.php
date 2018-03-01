@@ -6,6 +6,7 @@ use Closure;
 use Drefined\Zipkin\Core\Annotation;
 use Drefined\Zipkin\Core\BinaryAnnotation;
 use Drefined\Zipkin\Core\Endpoint;
+use Drefined\Zipkin\Core\Identifier;
 use Drefined\Zipkin\Instrumentation\Laravel\Services\ZipkinTracingService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
