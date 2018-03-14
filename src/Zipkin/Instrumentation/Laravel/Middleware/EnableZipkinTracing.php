@@ -113,6 +113,8 @@ class EnableZipkinTracing
             $tracingService = app(ZipkinTracingService::class);
 
             $trace = $tracingService->getTrace();
+            $spans           = $trace->getSpans();
+            self::$firstSpan = current($spans);
             $trace->pushSpan(self::$firstSpan);
             $trace->setEndpoint(self::$endPoint);
             $trace->record(
